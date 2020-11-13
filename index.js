@@ -16,7 +16,11 @@ app.post('/link', (req, res) => {
     .then((res) => {
       return res.text();
     })
-    .then((body) => formatData(body));
+    .then((body) => {
+      app.get('/link', (req, res) => {
+        res.json(formatData(body));
+      });
+    });
 
   res.end();
 });
@@ -51,9 +55,15 @@ function formatData(data) {
     if (lines.slice(0, 1) === 'B') return lastB;
   }
 
-  timeFormat(firstB.slice(1, 7), lastB.slice(1, 7));
-  altFormat(firstB, lastB);
-  locationFormat(lines);
+  // build final object
+  const formattedData = {
+    time: timeFormat(firstB.slice(1, 7), lastB.slice(1, 7)),
+    alt: altFormat(firstB, lastB),
+    location: locationFormat(lines),
+  };
+
+  console.log(formattedData);
+  return formattedData;
 }
 
 // time func : start, stop, duration
@@ -75,7 +85,8 @@ function timeFormat(start, stop) {
   if (duration.length <= 2) duration = '00:' + duration[0] + ':' + duration[1];
   else duration = duration[0] + ':' + duration[1] + ':' + duration[2];
 
-  console.log(startTime, stopTime, duration);
+  const timeData = { startTime, stopTime, duration };
+  return timeData;
 }
 
 // altitude func : start, stop
@@ -98,16 +109,19 @@ function altFormat(start, stop) {
   let stopAverageAlt = (stopPressureAlt + stopGpsAlt) / 2;
   stoptAverageAlt = parseInt(stopAverageAlt, 10);
 
-  console.log(
+  // create object to return
+  const altData = {
     startPressureAlt,
     startGpsAlt,
     startAverageAlt,
-    '\n',
     stopPressureAlt,
     stopGpsAlt,
-    stopAverageAlt
-  );
+    stopAverageAlt,
+  };
+
+  return altData;
 }
+
 // location - lat, long func : distance (2D), google maps integration
 function locationFormat(data) {
   const location = [];
@@ -120,7 +134,8 @@ function locationFormat(data) {
     let lng = data[i].slice(8);
     location.push({ lat: lat, lng: lng });
   }
-  console.log(location);
+
+  return location;
 }
 
 app.use(express.static('public'));
