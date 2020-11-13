@@ -12,7 +12,6 @@ app.use(express.static('public'));
 
 app.post('/link', (req, res) => {
   let url = req.body.igcUrl;
-  console.log(url);
 
   fetch(url)
     .then((res) => {
@@ -20,8 +19,8 @@ app.post('/link', (req, res) => {
     })
     .then((body) => {
       app.get('/data', (req, response) => {
-        // body in here does not update
-        console.log(body);
+        // body in here does not update, server must be restarted
+        // console.log(body);
         response.json(formatData(body));
       });
     })
@@ -39,7 +38,7 @@ function formatData(data) {
   // 00587: <altitude from pressure sensor>
   // 00558: <altitude from GPS></altitude>
 
-  let lines = data.split(/\r\n|\r|\n/);
+  const lines = data.split(/\r\n|\r|\n/);
   for (let i = 0; i < lines.length; i++) {
     // recognizes first char correctly but splice doesn't remove all
     if (lines[i].slice(0, 1) !== 'B') lines.splice(i, 1);

@@ -38,7 +38,7 @@
       function initMap(flightCords) {
         map = new google.maps.Map(document.getElementById("map"), {
 					center: flightCords[0],
-          zoom: 15,
+          zoom: 12,
 				});
 				const flightPath = new google.maps.Polyline({
           path: flightCords,
@@ -66,8 +66,6 @@
 	<div id="map"></div>
 	<script>
 		function getData() {
-			window.stop();
-
 			fetch('/data')
 				.then(res => {return res.json()})
 				.then(data => {
