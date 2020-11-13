@@ -23,6 +23,14 @@
         margin: 0;
         padding: 0;
       }
+
+			#info {
+				width:50%;
+				height: calc(100% - 30px);
+				position: absolute;
+				bottom: 0;
+				left: 0;
+			}
     </style>
     <script>
       let map;
@@ -41,9 +49,33 @@
 
 	<form action="/link" method="post" target="nonredirect">
 		<input type="url" name='igcUrl'>
-		<input type="submit" value="Format" />
+		<input type="submit" value="Format" onclick="getData()"/>
 	</form>
 
+	<div id="info"></div>
+
 	<div id="map"></div>
+	<script>
+		function getData() {
+			fetch('/link')
+				.then(res => {return res.json()})
+				.then(data => {
+					console.log(data)
+					const html = `Start: ${data.time.startTime}` + "<br/>" + 
+					`Landing: ${data.time.stopTime}` + "<br/>" + 
+					`Duration: ${data.time.duration}` + "<br/><br/>" + 
+					`GPS starting altitude: ${data.alt.startGpsAlt}m` + "<br/>" + 
+					`Pressure sensor starting altitude: ${data.alt.startPressureAlt}m` + "<br/>" + 
+					`Average starting altitude: ${data.alt.startAverageAlt}m` + "<br/><br/>" +
+					`GPS landing altitude: ${data.alt.stopGpsAlt}m` + "<br/>" +
+					`Pressure sensor landing altitude: ${data.alt.stopPressureAlt}m` + "<br/>" +
+					`Average landing altitude: ${data.alt.stopAverageAlt}m` + "<br/><br/>";
+
+					document.getElementById('info').innerHTML = html;
+					console.log(html)
+				}) 
+				.catch(err => console.log(err))
+		}
+	</script>
 </body>
 </html>

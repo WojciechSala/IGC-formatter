@@ -20,7 +20,8 @@ app.post('/link', (req, res) => {
       app.get('/link', (req, res) => {
         res.json(formatData(body));
       });
-    });
+    })
+    .catch((err) => console.log(err));
 
   res.end();
 });
@@ -62,7 +63,6 @@ function formatData(data) {
     location: locationFormat(lines),
   };
 
-  console.log(formattedData);
   return formattedData;
 }
 
