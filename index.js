@@ -8,22 +8,26 @@ app.use(
     extended: true,
   })
 );
+app.use(express.static('public'));
 
 app.post('/link', (req, res) => {
-  const url = req.body.igcUrl;
+  let url = req.body.igcUrl;
+  console.log(url);
 
   fetch(url)
     .then((res) => {
       return res.text();
     })
     .then((body) => {
-      app.get('/link', (req, res) => {
-        res.json(formatData(body));
+      app.get('/data', (req, response) => {
+        // body in here does not update
+        console.log(body);
+        response.json(formatData(body));
       });
     })
     .catch((err) => console.log(err));
 
-  res.end();
+  // res.redirect('/info');
 });
 
 function formatData(data) {
@@ -35,7 +39,7 @@ function formatData(data) {
   // 00587: <altitude from pressure sensor>
   // 00558: <altitude from GPS></altitude>
 
-  const lines = data.split(/\r\n|\r|\n/);
+  let lines = data.split(/\r\n|\r|\n/);
   for (let i = 0; i < lines.length; i++) {
     // recognizes first char correctly but splice doesn't remove all
     if (lines[i].slice(0, 1) !== 'B') lines.splice(i, 1);
@@ -132,13 +136,16 @@ function locationFormat(data) {
     // for better readability
     let lat = data[i].slice(0, 8);
     let lng = data[i].slice(8);
+
+    // google maps accept values in degrees only
+    // TODO: check if N or S to put -
+    lat = Number(lat.slice(0, 2) + '.' + lat.slice(2, 7));
+    lng = Number(lng.slice(0, 3) + '.' + lng.slice(3, 8));
     location.push({ lat: lat, lng: lng });
   }
-
   return location;
 }
 
-app.use(express.static('public'));
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });

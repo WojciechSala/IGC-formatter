@@ -33,21 +33,30 @@
 			}
     </style>
     <script>
-      let map;
+			let map;
 
-      function initMap() {
+      function initMap(flightCords) {
         map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: -34.397, lng: 150.644 },
-          zoom: 8,
+					center: flightCords[0],
+          zoom: 15,
+				});
+				const flightPath = new google.maps.Polyline({
+          path: flightCords,
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
         });
+				flightPath.setMap(map);
       }
+
     </script>
 
 </head>
 <body>
 	<iframe name="nonredirect" style="display: none;"></iframe>
 
-	<form action="/link" method="post" target="nonredirect">
+	<form action="/link" method="post" id="sendLink-form" target="nonredirect">
 		<input type="url" name='igcUrl'>
 		<input type="submit" value="Format" onclick="getData()"/>
 	</form>
@@ -57,10 +66,13 @@
 	<div id="map"></div>
 	<script>
 		function getData() {
-			fetch('/link')
+			window.stop();
+
+			fetch('/data')
 				.then(res => {return res.json()})
 				.then(data => {
 					console.log(data)
+					initMap(data.location)
 					const html = `Start: ${data.time.startTime}` + "<br/>" + 
 					`Landing: ${data.time.stopTime}` + "<br/>" + 
 					`Duration: ${data.time.duration}` + "<br/><br/>" + 
@@ -72,7 +84,6 @@
 					`Average landing altitude: ${data.alt.stopAverageAlt}m` + "<br/><br/>";
 
 					document.getElementById('info').innerHTML = html;
-					console.log(html)
 				}) 
 				.catch(err => console.log(err))
 		}
