@@ -53,6 +53,7 @@ function formatData(data) {
 
   timeFormat(firstB.slice(1, 7), lastB.slice(1, 7));
   altFormat(firstB, lastB);
+  locationFormat(lines);
 }
 
 // time func : start, stop, duration
@@ -87,7 +88,6 @@ function altFormat(start, stop) {
   startPressureAlt = parseInt(startPressureAlt, 10);
   let startGpsAlt = startAlt.slice(5);
   startGpsAlt = parseInt(startGpsAlt, 10);
-
   let startAverageAlt = (startPressureAlt + startGpsAlt) / 2;
   startAverageAlt = parseInt(startAverageAlt, 10);
 
@@ -95,7 +95,6 @@ function altFormat(start, stop) {
   stopPressureAlt = parseInt(stopPressureAlt, 10);
   let stopGpsAlt = stopAlt.slice(5);
   stopGpsAlt = parseInt(stopGpsAlt, 10);
-
   let stopAverageAlt = (stopPressureAlt + stopGpsAlt) / 2;
   stoptAverageAlt = parseInt(stopAverageAlt, 10);
 
@@ -110,6 +109,19 @@ function altFormat(start, stop) {
   );
 }
 // location - lat, long func : distance (2D), google maps integration
+function locationFormat(data) {
+  const location = [];
+
+  for (let i = 0; i < data.length; i++) {
+    data[i] = data[i].slice(7, data[i].search('A'));
+
+    // for better readability
+    let lat = data[i].slice(0, 8);
+    let lng = data[i].slice(8);
+    location.push({ lat: lat, lng: lng });
+  }
+  console.log(location);
+}
 
 app.use(express.static('public'));
 app.listen(port, () => {
