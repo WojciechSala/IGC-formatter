@@ -52,7 +52,7 @@ function formatData(data) {
   }
 
   timeFormat(firstB.slice(1, 7), lastB.slice(1, 7));
-  // timeFormat(112212, 122311);
+  altFormat(firstB, lastB);
 }
 
 // time func : start, stop, duration
@@ -70,7 +70,7 @@ function timeFormat(start, stop) {
   startTime = startTime[0] + ':' + startTime[1] + ':' + startTime[2];
   stopTime = stopTime[0] + ':' + stopTime[1] + ':' + stopTime[2];
 
-  // duration can take few minutes or hours
+  // duration can take few minutes or hours, (not all cases but don't wanna  waste time for details, not a production code :p)
   if (duration.length <= 2) duration = '00:' + duration[0] + ':' + duration[1];
   else duration = duration[0] + ':' + duration[1] + ':' + duration[2];
 
@@ -78,7 +78,38 @@ function timeFormat(start, stop) {
 }
 
 // altitude func : start, stop
-// lat, long func : distance (2D), google maps integration
+function altFormat(start, stop) {
+  let startAlt = start.slice(start.search('A') + 1, start.search('A') + 11);
+  let stopAlt = stop.slice(stop.search('A') + 1, stop.search('A') + 11);
+
+  // first 5 are from pressure sensor, last 5 are from GPS, so I'll take average of them
+  let startPressureAlt = startAlt.slice(0, 5);
+  startPressureAlt = parseInt(startPressureAlt, 10);
+  let startGpsAlt = startAlt.slice(5);
+  startGpsAlt = parseInt(startGpsAlt, 10);
+
+  let startAverageAlt = (startPressureAlt + startGpsAlt) / 2;
+  startAverageAlt = parseInt(startAverageAlt, 10);
+
+  let stopPressureAlt = stopAlt.slice(0, 5);
+  stopPressureAlt = parseInt(stopPressureAlt, 10);
+  let stopGpsAlt = stopAlt.slice(5);
+  stopGpsAlt = parseInt(stopGpsAlt, 10);
+
+  let stopAverageAlt = (stopPressureAlt + stopGpsAlt) / 2;
+  stoptAverageAlt = parseInt(stopAverageAlt, 10);
+
+  console.log(
+    startPressureAlt,
+    startGpsAlt,
+    startAverageAlt,
+    '\n',
+    stopPressureAlt,
+    stopGpsAlt,
+    stopAverageAlt
+  );
+}
+// location - lat, long func : distance (2D), google maps integration
 
 app.use(express.static('public'));
 app.listen(port, () => {
